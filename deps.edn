@@ -1,0 +1,8 @@
+{:paths     ["src/main/clj" "src/test/clj"]
+ :deps      {org.clojure/clojure                         {:mvn/version "RELEASE"}
+             com.rpl/rama-helpers                        {:mvn/version "RELEASE"}
+             org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "RELEASE"}
+             org.asynchttpclient/async-http-client       {:mvn/version "RELEASE"}
+             com.rpl/rama                                {:mvn/version "RELEASE"}}
+ :aliases   {:dev {:extra-paths ["src/test/resources/"]}}
+ :mvn/repos {"maven-releases" {:url "https://nexus.redplanetlabs.com/repository/maven-public-releases"}}}
