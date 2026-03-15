@@ -11,8 +11,8 @@
 (defn register! [registration-depot username->registration username pwd-hash]
   (let [{user-id "profiles"} (foreign-append! registration-depot
                                               (pm/->Registration (str (java.util.UUID/randomUUID))
-                                              username
-                                              pwd-hash))]
+                                               username
+                                               pwd-hash))]
     (if (some? user-id)
       user-id
       (throw (ex-info "Username already registered" {})))))
@@ -49,13 +49,19 @@
               :pwd-hash "hash4"}
              (foreign-select-one (keypath alice-id) profiles)))
 
+      ;; Accept Integer heights (e.g., values coming from Java/JSON).
+      (foreign-append! profile-edits-depot
+                       (pm/->ProfileEdits alice-id
+                                          [(pm/height-inches-edit (int 66))]))
+      (is (= 66 (foreign-select-one (keypath alice-id :height-inches) profiles)))
+
       ;; Verify that profile editing only replaces specified fields
       (foreign-append! profile-edits-depot
                        (pm/->ProfileEdits alice-id
                                           [(pm/display-name-edit "Alicia Smith")]))
       (is (= {:username "alice"
               :display-name "Alicia Smith"
-              :height-inches 65
+              :height-inches 66
               :pwd-hash "hash4"}
              (foreign-select-one (keypath alice-id) profiles)))
 
@@ -66,5 +72,4 @@
       (is (= {:username "bob"
               :display-name "Bobby"
               :pwd-hash "hash2"}
-             (foreign-select-one (keypath bob-id) profiles)))
-      )))
+             (foreign-select-one (keypath bob-id) profiles))))))

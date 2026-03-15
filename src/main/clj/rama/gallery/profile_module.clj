@@ -25,7 +25,10 @@
 
 (defn display-name-edit [value] (->ProfileEdit :display-name value))
 (defn pwd-hash-edit [value] (->ProfileEdit :pwd-hash value))
-(defn height-inches-edit [value] (->ProfileEdit :height-inches value))
+(defn height-inches-edit [value]
+  (->ProfileEdit :height-inches
+                 (when (some? value)
+                   (long value))))
 
 ;; This defines the module, whose body is a regular Clojure function implementation. All depots, ETLs,
 ;; PStates, and query topologies are defined via this entry point.
@@ -127,5 +130,4 @@
       ;; the variables *field and *value.
       (ops/explode *edits :> {:keys [*field *value]})
       ;; This writes the new value for each field into the $$profiles PState.
-      (local-transform> [(keypath *user-id *field) (termval *value)] $$profiles)
-      )))
+      (local-transform> [(keypath *user-id *field) (termval *value)] $$profiles))))
