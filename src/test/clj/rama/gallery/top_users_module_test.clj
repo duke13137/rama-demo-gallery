@@ -58,5 +58,4 @@
         (is (= [emily-id
                 david-id
                 alice-id]
-               (foreign-select [ALL FIRST] top-spending-users)))
-    ))))
+               (foreign-select [ALL FIRST] top-spending-users)))))))

@@ -100,6 +100,4 @@
                              $$top-spending-users
                              *tuple
                              :+options {:id-fn first
-                                        :sort-val-fn last})
-
-        ))))
+                                        :sort-val-fn last})))))

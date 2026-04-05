@@ -111,5 +111,4 @@
       ;; This subscribes the topology to *deposit-depot and defines the ETL logic for it.
       (source> *deposit-depot :> %microbatch)
       (%microbatch :> {:keys [*user-id *amt]})
-      (+compound $$funds {*user-id (aggs/+sum *amt)})
-      )))
+      (+compound $$funds {*user-id (aggs/+sum *amt)}))))

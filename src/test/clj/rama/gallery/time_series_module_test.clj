@@ -72,8 +72,8 @@
 
       ;; Verify that buckets at coarser granularity are aggregated correctly.
       (is (= (tsm/->WindowStats 7 146 30 10 33)
-             (foreign-select-one (keypath "foo.com" :d 0) window-stats)))
-      )))
+             (foreign-select-one (keypath "foo.com" :d 0) window-stats))))))
+      
 
 (deftest query-granularities-test
   (let [res (tsm/query-granularities :m 63 10033)]

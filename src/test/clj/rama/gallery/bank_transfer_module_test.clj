@@ -75,5 +75,4 @@
         (is (= 2 (count transfers)))
         (is (= #{["alice->charlie1" {:from-user-id alice-id :amt 160 :success? false}]
                  ["alice->charlie2" {:from-user-id alice-id :amt 25 :success? true}]}
-               (set transfers))))
-      )))
+               (set transfers)))))))

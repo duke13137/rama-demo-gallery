@@ -110,16 +110,16 @@
                    (query-granularities next-granularity
                                         next-start-bucket
                                         next-end-bucket))]
-            (concat more
-                    (if (>= next-aligned-start-bucket next-aligned-end-bucket)
-                      [[granularity start-bucket end-bucket]]
-                      (cond-> []
-                        (> next-aligned-start-bucket start-bucket)
-                        (conj [granularity start-bucket next-aligned-start-bucket])
+           (concat more
+                   (if (>= next-aligned-start-bucket next-aligned-end-bucket)
+                     [[granularity start-bucket end-bucket]]
+                     (cond-> []
+                       (> next-aligned-start-bucket start-bucket)
+                       (conj [granularity start-bucket next-aligned-start-bucket])
 
-                        (> end-bucket next-aligned-end-bucket)
-                        (conj [granularity next-aligned-end-bucket end-bucket])
-                        )))))))
+                       (> end-bucket next-aligned-end-bucket)
+                       (conj [granularity next-aligned-end-bucket end-bucket]))))))))
+                        
 
 ;; This defines the module, whose body is a regular Clojure function implementation. All depots, ETLs,
 ;; PStates, and query topologies are defined via this entry point.
@@ -214,5 +214,5 @@
       ;;   This aggregates all *bucket-stat objects emitted into a single object bound to the variable *stats. Note that this
       ;; is the variable specified at the start of the query topology to name the return value.
       ;;   The +combine-measurements aggregator here is the same one as used in the ETL above.
-      (+combine-measurements *bucket-stat :> *stats))
-    ))
+      (+combine-measurements *bucket-stat :> *stats))))
+    
