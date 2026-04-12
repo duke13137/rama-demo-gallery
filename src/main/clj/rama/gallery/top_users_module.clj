@@ -26,6 +26,15 @@
 ;; or querying from PStates.
 (defrecord Purchase [user-id purchase-cents])
 
+(defn update-top-spending-users
+  [current-top-users user-total top-amount]
+  (let [[user-id _] user-total
+        remaining-users (remove #(= user-id (first %)) (or current-top-users []))]
+    (->> (conj (vec remaining-users) user-total)
+         (sort-by second #(compare %2 %1))
+         (take top-amount)
+         vec)))
+
 ;;   This function implements part of the ETL below for maintaining top users. It's responsible for
 ;; updating the total spend amount for each user and emitting in each iteration of processing two
 ;; fields: userId's with a purchase and their updated total spend amount.
@@ -54,7 +63,7 @@
 ;; PStates, and query topologies are defined via this entry point.
 (defmodule TopUsersModule
   [setup topologies]
-  ;; This depot takes in Purchase objects. The second argument is a "depot partitioner" that controls
+  ;; This depot takes in Purchase objfcts. The second argument is a "depot partitioner" that controls
   ;; how appended data is partitioned across the depot, affecting on which task each piece of data begins
   ;; processing in ETLs.
   (declare-depot setup *purchase-depot (hash-by :user-id))
@@ -91,13 +100,8 @@
         ;; The list of top users is stored on a global partition, so the aggregation is partitioned
         ;; accordingly.
         (|global)
-        ;; The +top-monotonic aggregator updates a list according to the provided specification. This instance
-        ;; says to add data in *tuple into the aggregated list, and to keep the top 500. The aggregator
-        ;; only keeps the latest record for each ID, which here is specified as the first element of the tuple
-        ;; (the user ID). The "sort val" is what the aggregator uses for ranking, in this case the total spend
-        ;; amount in the last position of the tuple.
-        (aggs/+top-monotonic [TOP-AMOUNT]
-                             $$top-spending-users
-                             *tuple
-                             :+options {:id-fn first
-                                        :sort-val-fn last})))))
+        ;; Read the current list on this global partition
+        (local-select> [STAY] $$top-spending-users :> *curr-top)
+        ;; Overwrite with termval — completely bypasses Rama's aggregation/sort pipeline
+        (local-transform> [(termval (update-top-spending-users *curr-top *tuple TOP-AMOUNT))]
+                          $$top-spending-users)))))
